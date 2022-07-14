@@ -32,5 +32,6 @@ npm install
 npm start
 ```
 
-直播Demo: localhost/mclass
-手势识别Demo: localhost/ASL
+直播Demo: `localhost/mclass`
+
+手势识别Demo: `localhost/ASL`

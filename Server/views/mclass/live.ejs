@@ -1,0 +1,127 @@
+<%- include('../header') %>
+<style>
+#chatarea {
+    width:20%;
+    padding:10px;
+    display:flex;
+    flex-flow:column;
+    justify-content:space-between;
+}
+@media screen and (max-width: 560px) {
+    .container {
+        flex-flow:column;
+    }
+    #videoElement {
+        width: 100%;
+        height: 80%;
+    }
+    #chatarea {
+        width:100%;
+        height:350px;
+    }
+}
+</style>
+<div class="container" style="margin-top:30px;display:flex;">
+<% if(user==='' || user===undefined){%>
+    <h1>请先登录！</h1>
+<%}else{%>
+    <video id="videoElement" class="centeredVideo" controls autoplay width="80%" height="570">Your browser is too old which doesn't support HTML5 video.</video>
+    <!--div class="controls">
+        <button onclick="flv_load()">加载</button>
+        <button onclick="flv_start()">开始</button>
+        <button onclick="flv_pause()">暂停</button>
+        <button onclick="flv_destroy()">停止</button>
+        <input style="width:100px" type="text" name="seekpoint" />
+        <button onclick="flv_seekto()">跳转</button>
+    </div-->
+    <div id="chatarea">
+    <h6>聊天区</h6>
+    <textarea id="chat" style="height:70%"></textarea>
+    <textarea id="sends" style="height:20%"></textarea>
+    <p style="text-align:center;"><a href="javascript:sendmsg()" class="btn btn-primary btn-block btn-sm">发送</a></p>
+    </div>
+    <script>
+        var int,lastmsgtime=new Date().getTime();
+        function TimerOn(){TimerOff();int=self.setInterval("update()",3000);/*定时更新，间隔3000ms*/}
+        function TimerOff(){int=window.clearInterval(int);}
+        TimerOn();
+        function update(){
+            console.log([new Date().getTime(),lastmsgtime]);
+            $.ajax({type: "POST", dataType: "json", data: {"time":lastmsgtime}, url: "/comm/query",success:function(result){
+                if(result.success && result.data.length>0){
+                    var text = $("#chat").html(),len=result.data.length,msgs=result.data;
+                    for(let i=0;i<len;i++){
+                        var d = new Date();d.setTime(msgs[i].time);
+                        text+=`[${d.format("hh:mm:ss")}] 来自${msgs[i].name}\r\n${msgs[i].data}\r\n\r\n`
+                        lastmsgtime=Number(msgs[i].time);
+                    }
+                    console.log(text);
+                    $("#chat").html(text);
+                }
+            }});
+        }
+        function sendmsg(){
+            $.ajax({type: "POST", dataType: "json", data: {"time":new Date().getTime(),"data":$("#sends")[0].value}, url: "/comm/send",success:function(result){
+                if(!result.success){
+                    alert("发送失败:"+result.msg);
+                }else{
+                    $("#sends")[0].value="";
+                }
+            }});
+            update();
+        }
+        var player = document.getElementById('videoElement');
+        if (flvjs.isSupported()) {
+            var flvPlayer = flvjs.createPlayer({
+                type: 'flv',
+                url: 'http://myfrank-personal.top/live/<%= livename %>.flv'
+            });
+            flvPlayer.attachMediaElement(videoElement);
+            flvPlayer.load(); //加载
+        }
+
+        function flv_start() {
+            player.play();
+        }
+
+        function flv_pause() {
+            player.pause();
+        }
+
+        function flv_destroy() {
+            player.pause();
+            player.unload();
+            player.detachMediaElement();
+            player.destroy();
+            player = null;
+        }
+
+        function flv_seekto() {
+            player.currentTime = parseFloat(document.getElementsByName('seekpoint')[0].value);
+        }
+        flv_start();
+        Date.prototype.format = function(format) {  
+            var o = {    
+                "M+": this.getMonth() + 1, // month    
+                "d+": this.getDate(), // day    
+                "h+": this.getHours(), // hour    
+                "m+": this.getMinutes(), // minute    
+                "s+": this.getSeconds() // second  
+                };  
+            if (/(y+)/.test(format)) {    
+                format = format.replace(RegExp.$1, (this.getFullYear() + "").    
+                substr(4 - RegExp.$1.length));  
+            }  
+            for (var k in o) {    
+                if (new RegExp("(" + k + ")").test(format)) {      
+                    format = format.replace(RegExp.$1,        
+                    RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).        
+                    substr(("" + o[k]).length));    
+                }  
+            }  
+            return format;
+        };
+    </script>
+<%}%>
+</div>
+<%- include('../footer') %>

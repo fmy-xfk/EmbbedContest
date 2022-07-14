@@ -1,0 +1,28 @@
+<%- include('../header') %>
+<style>
+#main {
+    width:450px;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%);
+}
+@media screen and (max-width: 560px) {
+    #main {
+        width: 80%;
+    }
+}
+</style>
+<div class="container" style="margin-top:30px">
+    <div id="main" class="card m-auto">
+        <div class="card-body">
+        <form method="get" action="/mclass">
+            <h4 class="card-title">欢迎来到课堂直播系统</h4>
+            <p class="card-text">请输入课堂代号</p>
+            <p class="card-text"><input type="text" name="code" style="width:100%" value="" placeholder="课堂代号" required="required"/></p>
+            <p style="text-align:center"><button type="submit" class="btn btn-primary">进入</button></p>
+        </form>
+        </div>
+    </div>
+</div>
+<%- include('../footer') %>

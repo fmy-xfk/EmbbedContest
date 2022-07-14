@@ -1,0 +1,15 @@
+<%- include('header') %>
+<div class="container" style="margin-top:30px">
+    <h2>Oops!</h2>
+    <% if (status==404) { %>
+        <p>This page wasn't found. Do you enter the correct URL?</p>
+    <% } else if (status==403) {%>
+        <p>Access denied. Please login first!</p>
+        <p><%=err%></p>
+    <% } else {%>
+        <p>Error: <%= status %>. Please retry later.</p>
+        <p><%=err%></p>
+    <% }%>
+    <p>Go back to <a href="/">home page</a>.</p>
+</div>
+<%- include('footer') %>
